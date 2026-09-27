@@ -7,7 +7,12 @@ from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 
 from app.aws import get_s3_client, get_table
 from app.config import Settings, get_settings
-from app.schemas import MAX_EXPIRY_SECONDS, MIN_EXPIRY_SECONDS, UploadResponse
+from app.schemas import (
+    MAX_EXPIRY_SECONDS,
+    MAX_PASSWORD_LENGTH,
+    MIN_EXPIRY_SECONDS,
+    UploadResponse,
+)
 from app.security import generate_share_id, hash_password
 
 router = APIRouter(prefix="/api")
@@ -20,7 +25,7 @@ def upload_file(
     expires_in: Annotated[int, Form(ge=MIN_EXPIRY_SECONDS, le=MAX_EXPIRY_SECONDS)],
     max_downloads: Annotated[int, Form(ge=1, le=50)],
     settings: Annotated[Settings, Depends(get_settings)],
-    password: Annotated[str | None, Form(max_length=128)] = None,
+    password: Annotated[str | None, Form(max_length=MAX_PASSWORD_LENGTH)] = None,
     s3=Depends(get_s3_client),
     table=Depends(get_table),
 ):

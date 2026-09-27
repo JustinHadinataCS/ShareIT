@@ -50,3 +50,14 @@ def aws(monkeypatch, tmp_path):
 @pytest.fixture
 def client(aws):
     return TestClient(app)
+
+
+@pytest.fixture
+def upload(client):
+    def upload(content=b"hello", filename="notes.txt", **fields):
+        data = {"expires_in": 3600, "max_downloads": 3} | fields
+        return client.post(
+            "/api/files", data=data, files={"file": (filename, content, "text/plain")}
+        )
+
+    return upload

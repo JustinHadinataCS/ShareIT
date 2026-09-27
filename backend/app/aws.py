@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 import boto3
+from botocore.config import Config
 
 from app.config import get_settings
 
@@ -9,7 +10,11 @@ from app.config import get_settings
 
 @lru_cache
 def get_s3_client():
-    return boto3.client("s3", region_name=get_settings().aws_region)
+    return boto3.client(
+        "s3",
+        region_name=get_settings().aws_region,
+        config=Config(signature_version="s3v4"),
+    )
 
 
 @lru_cache

@@ -21,3 +21,15 @@ function errorMessage(body) {
 export function uploadFile(formData) {
   return request("/api/files", { method: "POST", body: formData });
 }
+
+export function getShare(shareId) {
+  return request(`/api/share/${encodeURIComponent(shareId)}`);
+}
+
+export function requestDownload(shareId, password) {
+  return request(`/api/share/${encodeURIComponent(shareId)}/download`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: password || null }),
+  });
+}
