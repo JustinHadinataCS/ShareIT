@@ -8,6 +8,7 @@ from moto import mock_aws
 from app.aws import get_s3_client, get_table
 from app.config import get_settings
 from app.main import app
+from app.rate_limit import limiter
 
 REGION = "us-east-1"
 BUCKET = "test-bucket"
@@ -49,6 +50,7 @@ def aws(monkeypatch, tmp_path):
 
 @pytest.fixture
 def client(aws):
+    limiter.reset()
     return TestClient(app)
 
 

@@ -1,7 +1,9 @@
 from pathlib import Path
 
 from fastapi import FastAPI
+from slowapi.errors import RateLimitExceeded
 
+from app.rate_limit import limiter, rate_limit_exceeded
 from app.routers import files, shares
 from app.spa import SPAStaticFiles
 
@@ -9,6 +11,8 @@ from app.spa import SPAStaticFiles
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 app = FastAPI(title="ShareIT")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded)
 app.include_router(files.router)
 app.include_router(shares.router)
 

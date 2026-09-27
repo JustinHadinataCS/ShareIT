@@ -3,10 +3,11 @@ from datetime import datetime, timezone
 from typing import Annotated
 from urllib.parse import quote
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
 
 from app.aws import get_s3_client, get_table
 from app.config import Settings, get_settings
+from app.rate_limit import DOWNLOAD_LIMIT, SHARE_INFO_LIMIT, limiter
 from app.schemas import DownloadRequest, DownloadResponse, ShareInfo
 from app.security import verify_password
 
@@ -36,7 +37,8 @@ def attachment(filename: str) -> str:
 
 
 @router.get("/{share_id}", response_model=ShareInfo)
-def get_share_info(share_id: ShareId, table=Depends(get_table)):
+@limiter.limit(SHARE_INFO_LIMIT)
+def get_share_info(request: Request, share_id: ShareId, table=Depends(get_table)):
     share = get_active_share(table, share_id)
     return ShareInfo(
         filename=share["filename"],
@@ -47,7 +49,9 @@ def get_share_info(share_id: ShareId, table=Depends(get_table)):
 
 
 @router.post("/{share_id}/download", response_model=DownloadResponse)
+@limiter.limit(DOWNLOAD_LIMIT)
 def download_share(
+    request: Request,
     share_id: ShareId,
     settings: Annotated[Settings, Depends(get_settings)],
     body: DownloadRequest | None = None,

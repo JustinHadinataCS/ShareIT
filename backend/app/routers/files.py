@@ -3,10 +3,11 @@ import time
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, UploadFile, status
 
 from app.aws import get_s3_client, get_table
 from app.config import Settings, get_settings
+from app.rate_limit import UPLOAD_LIMIT, limiter
 from app.schemas import (
     MAX_EXPIRY_SECONDS,
     MAX_PASSWORD_LENGTH,
@@ -20,7 +21,9 @@ router = APIRouter(prefix="/api")
 
 # A plain `def` (not async) so FastAPI runs the blocking boto3 calls in a thread pool.
 @router.post("/files", response_model=UploadResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit(UPLOAD_LIMIT)
 def upload_file(
+    request: Request,
     file: UploadFile,
     expires_in: Annotated[int, Form(ge=MIN_EXPIRY_SECONDS, le=MAX_EXPIRY_SECONDS)],
     max_downloads: Annotated[int, Form(ge=1, le=50)],

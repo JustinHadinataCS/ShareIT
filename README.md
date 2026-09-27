@@ -33,8 +33,9 @@ Built with React + Vite, FastAPI, Pydantic, boto3, S3, DynamoDB, EC2, Docker and
 - **Passwords are hashed with Argon2.** A wrong guess doesn't use up a download.
 - **The download count can't be double-spent.** It's decremented with a conditional update, so if two people race for the last download, only one gets it.
 - **Old stuff cleans itself up.** DynamoDB TTL removes expired links, and an S3 lifecycle rule deletes files after 7 days. The code still checks expiry itself, since TTL can lag.
+- **Every endpoint is rate-limited per IP.** 10 uploads a minute, 60 link lookups, and 10 download attempts, which also caps password guessing.
 
-Still on the to-do list: rate limiting and HTTPS.
+Still on the to-do list: HTTPS.
 
 ## Running it locally
 
