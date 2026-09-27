@@ -1,17 +1,26 @@
-import { useEffect, useState } from "react";
-import { getShare, requestDownload } from "../api.js";
-import Emoji from "../components/Emoji.jsx";
+import { useEffect, useState, type SubmitEvent } from "react";
+import {
+  getShare,
+  messageOf,
+  requestDownload,
+  type ShareInfo,
+} from "../api.ts";
+import Emoji from "../components/Emoji.tsx";
 
-function formatSize(bytes) {
+function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function SharePage({ shareId }) {
-  const [share, setShare] = useState(null);
-  const [loadError, setLoadError] = useState(null);
-  const [error, setError] = useState(null);
+interface SharePageProps {
+  shareId: string;
+}
+
+function SharePage({ shareId }: SharePageProps) {
+  const [share, setShare] = useState<ShareInfo | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -21,8 +30,8 @@ function SharePage({ shareId }) {
       (data) => {
         if (!ignore) setShare(data);
       },
-      (err) => {
-        if (!ignore) setLoadError(err.message);
+      (err: unknown) => {
+        if (!ignore) setLoadError(messageOf(err));
       },
     );
     return () => {
@@ -30,9 +39,9 @@ function SharePage({ shareId }) {
     };
   }, [shareId]);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    const password = new FormData(event.currentTarget).get("password");
+    const password = new FormData(event.currentTarget).get("password")?.toString();
 
     setError(null);
     setHasStarted(false);
@@ -42,7 +51,7 @@ function SharePage({ shareId }) {
       window.location.assign(url);
       setHasStarted(true);
     } catch (err) {
-      setError(err.message);
+      setError(messageOf(err));
     } finally {
       setIsDownloading(false);
     }

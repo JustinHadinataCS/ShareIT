@@ -23,7 +23,7 @@ browser <── S3 presigned URL, valid for 60 seconds
 
 React talks to a FastAPI backend, which runs in a single Docker container on EC2. It also serves the frontend. Files go into a private S3 bucket, and each link is a row in DynamoDB. When you hit download, the backend checks the link and hands back an S3 URL that only works for 60 seconds.
 
-Built with React + Vite, FastAPI, Pydantic, boto3, S3, DynamoDB, EC2, Docker and GitHub Actions.
+Built with React + TypeScript + Vite, FastAPI, Pydantic, boto3, S3, DynamoDB, EC2, Docker and GitHub Actions.
 
 ## Security bits I cared about
 

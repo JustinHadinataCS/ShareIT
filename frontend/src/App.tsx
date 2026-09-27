@@ -1,6 +1,6 @@
-import Emoji from './components/Emoji.jsx'
-import UploadPage from './pages/UploadPage.jsx'
-import SharePage from './pages/SharePage.jsx'
+import Emoji from './components/Emoji.tsx'
+import UploadPage from './pages/UploadPage.tsx'
+import SharePage from './pages/SharePage.tsx'
 
 function App() {
   const shareMatch = window.location.pathname.match(/^\/share\/([^/]+)\/?$/)

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { uploadFile } from "../api.js";
-import Emoji from "../components/Emoji.jsx";
+import { useState, type SubmitEvent } from "react";
+import { messageOf, uploadFile, type UploadResult } from "../api.ts";
+import Emoji from "../components/Emoji.tsx";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -12,16 +12,17 @@ const EXPIRY_OPTIONS = [
 ];
 
 function UploadPage() {
-  const [share, setShare] = useState(null);
-  const [error, setError] = useState(null);
+  const [share, setShare] = useState<UploadResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const file = formData.get("file");
 
     setShare(null);
-    if (formData.get("file").size > MAX_FILE_SIZE) {
+    if (file instanceof File && file.size > MAX_FILE_SIZE) {
       setError("File is larger than 10 MB");
       return;
     }
@@ -31,7 +32,7 @@ function UploadPage() {
     try {
       setShare(await uploadFile(formData));
     } catch (err) {
-      setError(err.message);
+      setError(messageOf(err));
     } finally {
       setIsUploading(false);
     }
