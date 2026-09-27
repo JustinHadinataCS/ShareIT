@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { uploadFile } from "../api.js";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const EXPIRY_OPTIONS = [
   { label: "5 minutes", seconds: 5 * 60 },
@@ -8,11 +11,29 @@ const EXPIRY_OPTIONS = [
 ];
 
 function UploadPage() {
-  const [shareUrl, setShareUrl] = useState(null);
+  const [share, setShare] = useState(null);
+  const [error, setError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setShareUrl(`${window.location.origin}/share/example`);
+    const formData = new FormData(event.currentTarget);
+
+    setShare(null);
+    if (formData.get("file").size > MAX_FILE_SIZE) {
+      setError("File is larger than 10 MB");
+      return;
+    }
+
+    setError(null);
+    setIsUploading(true);
+    try {
+      setShare(await uploadFile(formData));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -59,14 +80,24 @@ function UploadPage() {
           />
         </div>
 
-        <button type="submit">Upload</button>
+        <button type="submit" disabled={isUploading}>
+          {isUploading ? "Uploading..." : "Upload"}
+        </button>
       </form>
 
-      {shareUrl && (
+      {error && <p role="alert">{error}</p>}
+
+      {share && (
         <section>
           <h2>Your share link</h2>
           <p>
-            <a href={shareUrl}>{shareUrl}</a>
+            <a href={share.share_url}>{share.share_url}</a>
+          </p>
+          <p>
+            Expires{" "}
+            <time dateTime={share.expires_at}>
+              {new Date(share.expires_at).toLocaleString()}
+            </time>
           </p>
         </section>
       )}
