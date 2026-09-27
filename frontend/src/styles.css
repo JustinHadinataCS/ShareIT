@@ -1,0 +1,213 @@
+:root {
+  --black: #000;
+  --white: #fff;
+  --gray: #666;
+  --light: #f3f3f3;
+  --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--black);
+  background: var(--white);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--white);
+}
+
+/* Layout */
+
+.site-header {
+  padding: 18px 16px;
+  border-bottom: 2px solid var(--black);
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--black);
+  text-decoration: none;
+}
+
+main {
+  padding: 48px 16px;
+}
+
+.card {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 32px;
+  border: 2px solid var(--black);
+  border-radius: 10px;
+  box-shadow: 6px 6px 0 var(--black);
+}
+
+/* Text */
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.subtitle {
+  margin: 4px 0 28px;
+  color: var(--gray);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+/* Forms */
+
+form {
+  display: grid;
+  gap: 20px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+label,
+dt {
+  font-weight: 600;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--white);
+  border: 2px solid var(--black);
+  border-radius: 6px;
+}
+
+input[type="file"] {
+  padding: 8px;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 6px 12px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--black);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button {
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  border: 2px solid var(--black);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+button:hover:not(:disabled) {
+  color: var(--black);
+  background: var(--white);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+:is(a, input, select, button):focus-visible {
+  outline: 3px solid var(--black);
+  outline-offset: 2px;
+}
+
+/* Feedback */
+
+.alert {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  background: var(--light);
+  border: 2px solid var(--black);
+  border-radius: 6px;
+}
+
+.result {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--black);
+}
+
+.result .hint {
+  margin: 8px 0 0;
+}
+
+.share-link {
+  display: block;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--black);
+  background: var(--light);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+/* Download details */
+
+.details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px 16px;
+  margin: 0 0 28px;
+  padding: 16px;
+  background: var(--light);
+  border-radius: 6px;
+}
+
+.details dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 24px 16px;
+  }
+
+  .card {
+    padding: 24px 20px;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+}
