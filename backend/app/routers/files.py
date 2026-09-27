@@ -3,11 +3,11 @@ import time
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile, status
 
 from app.aws import get_s3_client, get_table
 from app.config import Settings, get_settings
-from app.schemas import UploadForm, UploadResponse
+from app.schemas import MAX_EXPIRY_SECONDS, MIN_EXPIRY_SECONDS, UploadResponse
 from app.security import generate_share_id, hash_password
 
 router = APIRouter(prefix="/api")
@@ -16,12 +16,14 @@ router = APIRouter(prefix="/api")
 # A plain `def` (not async) so FastAPI runs the blocking boto3 calls in a thread pool.
 @router.post("/files", response_model=UploadResponse, status_code=status.HTTP_201_CREATED)
 def upload_file(
-    form: Annotated[UploadForm, Form()],
+    file: UploadFile,
+    expires_in: Annotated[int, Form(ge=MIN_EXPIRY_SECONDS, le=MAX_EXPIRY_SECONDS)],
+    max_downloads: Annotated[int, Form(ge=1, le=50)],
     settings: Annotated[Settings, Depends(get_settings)],
+    password: Annotated[str | None, Form(max_length=128)] = None,
     s3=Depends(get_s3_client),
     table=Depends(get_table),
 ):
-    file = form.file
     if not file.size:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "File is empty")
     if file.size > settings.max_file_size:
@@ -30,7 +32,7 @@ def upload_file(
     filename = os.path.basename(file.filename or "") or "file"
     share_id = generate_share_id()
     s3_key = share_id
-    expires_at = int(time.time()) + form.expires_in
+    expires_at = int(time.time()) + expires_in
 
     s3.upload_fileobj(
         file.file,
@@ -45,10 +47,10 @@ def upload_file(
         "s3_key": s3_key,
         "size": file.size,
         "expires_at": expires_at,
-        "downloads_remaining": form.max_downloads,
+        "downloads_remaining": max_downloads,
     }
-    if form.password:
-        item["password_hash"] = hash_password(form.password)
+    if password:
+        item["password_hash"] = hash_password(password)
 
     table.put_item(Item=item, ConditionExpression="attribute_not_exists(share_id)")
 
