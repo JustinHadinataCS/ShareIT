@@ -1,17 +1,15 @@
-// TODO: replace with the response from GET /api/share/{id}
 const PLACEHOLDER_SHARE = {
-  filename: 'example.pdf',
+  filename: "example.pdf",
   size: 2_400_000,
-  expiresAt: '2026-10-04T12:00:00Z',
+  expiresAt: "2026-10-04T12:00:00Z",
   passwordRequired: true,
-}
+};
 
 function SharePage({ shareId }) {
-  const share = PLACEHOLDER_SHARE
+  const share = PLACEHOLDER_SHARE;
 
   function handleSubmit(event) {
-    event.preventDefault()
-    // TODO: POST /api/share/{shareId}/download and redirect to the presigned URL
+    event.preventDefault();
   }
 
   return (
@@ -51,7 +49,7 @@ function SharePage({ shareId }) {
         <button type="submit">Download</button>
       </form>
     </section>
-  )
+  );
 }
 
-export default SharePage
+export default SharePage;

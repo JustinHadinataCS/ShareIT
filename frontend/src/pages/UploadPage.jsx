@@ -1,19 +1,18 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const EXPIRY_OPTIONS = [
-  { label: '5 minutes', seconds: 5 * 60 },
-  { label: '1 hour', seconds: 60 * 60 },
-  { label: '1 day', seconds: 24 * 60 * 60 },
-  { label: '7 days', seconds: 7 * 24 * 60 * 60 },
-]
+  { label: "5 minutes", seconds: 5 * 60 },
+  { label: "1 hour", seconds: 60 * 60 },
+  { label: "1 day", seconds: 24 * 60 * 60 },
+  { label: "7 days", seconds: 7 * 24 * 60 * 60 },
+];
 
 function UploadPage() {
-  const [shareUrl, setShareUrl] = useState(null)
+  const [shareUrl, setShareUrl] = useState(null);
 
   function handleSubmit(event) {
-    event.preventDefault()
-    // TODO: POST /api/files and show the share link it returns
-    setShareUrl(`${window.location.origin}/share/example`)
+    event.preventDefault();
+    setShareUrl(`${window.location.origin}/share/example`);
   }
 
   return (
@@ -72,7 +71,7 @@ function UploadPage() {
         </section>
       )}
     </section>
-  )
+  );
 }
 
-export default UploadPage
+export default UploadPage;
